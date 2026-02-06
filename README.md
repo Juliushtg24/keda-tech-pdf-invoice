@@ -37,6 +37,12 @@ keda-tech/
 │   ├── main.py          # FastAPI application & Lambda handler
 │   ├── models.py        # Pydantic request models
 │   └── pdf.py           # PDF generation logic
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py      # Pytest fixtures
+│   ├── test_api.py      # API endpoint tests
+│   ├── test_models.py   # Model validation tests
+│   └── test_pdf.py      # PDF generation tests
 ├── Dockerfile           # Lambda container configuration
 ├── requirements.txt     # Python dependencies
 └── README.md
@@ -145,6 +151,40 @@ Generates and displays the PDF invoice inline in the browser.
 ---
 
 ## 🧪 Testing
+
+### Unit Tests
+
+The project includes comprehensive unit tests using pytest.
+
+**Run all tests:**
+```bash
+python -m pytest -v
+```
+
+**Run with coverage report:**
+```bash
+python -m pytest --cov=app --cov-report=html
+```
+
+**Test Structure:**
+| File | Tests | Description |
+|------|-------|-------------|
+| `test_models.py` | 11 | Pydantic model validation |
+| `test_pdf.py` | 12 | PDF generation functionality |
+| `test_api.py` | 19 | API endpoints (health, generate, preview) |
+
+**Sample Test Data:**
+```json
+{
+  "customer_name": "Julius Martin",
+  "guide_name": "Bali Explorer",
+  "date": "2026-04-05",
+  "price": 1500000000,
+  "currency": "IDR"
+}
+```
+
+---
 
 ### Using cURL
 
