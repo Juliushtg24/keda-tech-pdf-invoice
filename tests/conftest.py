@@ -22,7 +22,9 @@ def sample_invoice_data() -> dict:
         "customer_name": "Julius Martin",
         "guide_name": "Bali Explorer",
         "date": "2026-04-05",
-        "price": 1500000000,
+         "items": [
+            {"description": "Tour Guide Service", "quantity": 1, "price": 1500000000}
+        ],
         "currency": "IDR"
     }
 
@@ -34,7 +36,9 @@ def sample_invoice_request() -> InvoiceRequest:
         customer_name="Julius Martin",
         guide_name="Bali Explorer",
         date=date(2026, 4, 5),
-        price=1500000000,
+        items=[
+            {"description": "Tour Guide Service", "quantity": 1, "price": 1500000000}
+        ],
         currency="IDR"
     )
 
@@ -46,6 +50,6 @@ def invalid_invoice_data() -> dict:
         "customer_name": "",
         "guide_name": "Bali Explorer",
         "date": "invalid-date",
-        "price": "not-a-number",
+        "items": "not-a-list",
         "currency": "USD"
     }

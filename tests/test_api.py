@@ -55,7 +55,7 @@ class TestGenerateInvoice:
         data = {
             "guide_name": "Bali Explorer",
             "date": "2026-04-05",
-            "price": 1500000000,
+            "items": [{"description": "Tour Guide Service", "quantity": 1, "price": 1500000000}],
             "currency": "IDR"
         }
 
@@ -68,7 +68,7 @@ class TestGenerateInvoice:
         data = {
             "customer_name": "Julius Martin",
             "date": "2026-04-05",
-            "price": 1500000000,
+            "items": [{"description": "Tour Guide Service", "quantity": 1, "price": 1500000000}],
             "currency": "IDR"
         }
 
@@ -82,7 +82,7 @@ class TestGenerateInvoice:
             "customer_name": "Julius Martin",
             "guide_name": "Bali Explorer",
             "date": "invalid-date",
-            "price": 1500000000,
+            "items": [{"description": "Tour Guide Service", "quantity": 1, "price": 1500000000}],
             "currency": "IDR"
         }
 
@@ -90,13 +90,13 @@ class TestGenerateInvoice:
 
         assert response.status_code == 422
 
-    def test_generate_invoice_invalid_price(self, test_client):
-        """Should return 422 for non-numeric price."""
+    def test_generate_invoice_invalid_items(self, test_client):
+        """Should return 422 for invalid items."""
         data = {
             "customer_name": "Julius Martin",
             "guide_name": "Bali Explorer",
             "date": "2026-04-05",
-            "price": "expensive",
+            "items": "not-a-list",
             "currency": "IDR"
         }
 
@@ -111,7 +111,7 @@ class TestGenerateInvoice:
         assert response.status_code == 422
 
     def test_generate_invoice_get_method_not_allowed(self, test_client):
-        """Should return 405 for GET method."""
+        """Should return 405 for get  method."""
         response = test_client.get("/generate-invoice")
 
         assert response.status_code == 405

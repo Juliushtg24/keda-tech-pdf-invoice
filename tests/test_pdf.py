@@ -48,7 +48,9 @@ class TestGenerateInvoicePdf:
                 customer_name="Test User",
                 guide_name="Test Guide",
                 date=date(2026, 1, 1),
-                price=100.00,
+                items=[
+                    {"description": "Tour Guide Service", "quantity": 1, "price": 100.00}
+                ],
                 currency=currency
             )
 
@@ -64,7 +66,9 @@ class TestGenerateInvoicePdf:
             customer_name="Very Long Customer Name That Might Overflow",
             guide_name="Bali Explorer",
             date=date(2026, 4, 5),
-            price=1500000000,
+            items=[
+                {"description": "Tour Guide Service", "quantity": 1, "price": 1500000000}
+            ],
             currency="IDR"
         )
 
@@ -79,7 +83,9 @@ class TestGenerateInvoicePdf:
             customer_name="Julius Martin",
             guide_name="Extremely Long Guide Name For Testing Purposes",
             date=date(2026, 4, 5),
-            price=1500000000,
+            items=[
+                {"description": "Tour Guide Service", "quantity": 1, "price": 1500000000}
+            ],
             currency="IDR"
         )
 
@@ -94,7 +100,9 @@ class TestGenerateInvoicePdf:
             customer_name="Julius Martin",
             guide_name="Bali Explorer",
             date=date(2026, 4, 5),
-            price=0.00,
+            items=[
+                {"description": "Complimentary Service", "quantity": 1, "price": 0.00}
+            ],
             currency="IDR"
         )
 
@@ -109,7 +117,9 @@ class TestGenerateInvoicePdf:
             customer_name="Julius Martin",
             guide_name="Bali Explorer",
             date=date(2026, 4, 5),
-            price=1500000000.50,
+            items=[
+                {"description": "Tour Guide Service", "quantity": 1, "price": 1500000000.50}
+            ],
             currency="IDR"
         )
 
@@ -124,7 +134,9 @@ class TestGenerateInvoicePdf:
             customer_name="Julius Martin",
             guide_name="Bali Explorer",
             date=date(2026, 4, 5),
-            price=1500000000,
+            items=[
+                {"description": "Tour Guide Service", "quantity": 1, "price": 1500000000}
+            ],
             currency="IDR"
         )
 

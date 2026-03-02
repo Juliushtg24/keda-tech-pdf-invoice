@@ -5,7 +5,24 @@ import pytest
 from datetime import date
 from pydantic import ValidationError
 
-from app.models import InvoiceRequest
+from app.models import InvoiceRequest, InvoiceItem
+
+
+class TestInvoiceItem:
+    """Test cases for InvoiceItem model."""
+
+    def test_valid_invoice_item(self):
+        """Should create InvoiceItem with valid data."""
+        item = InvoiceItem(description="Tour Guide Service", quantity=2, price=500.00)
+
+        assert item.description == "Tour Guide Service"
+        assert item.quantity == 2
+        assert item.price == 500.00
+
+    def test_invoice_item_missing_description(self):
+        """Should raise ValidationError when description is missing."""
+        with pytest.raises(ValidationError):
+            InvoiceItem(quantity=1, price=100.00)
 
 
 class TestInvoiceRequest:
@@ -17,14 +34,17 @@ class TestInvoiceRequest:
             customer_name="Julius Martin",
             guide_name="Bali Explorer",
             date=date(2026, 4, 5),
-            price=1500000000,
+            items=[
+                {"description": "Tour Guide Service", "quantity": 1, "price": 1500000000}
+            ],
             currency="IDR"
         )
 
         assert invoice.customer_name == "Julius Martin"
         assert invoice.guide_name == "Bali Explorer"
         assert invoice.date == date(2026, 4, 5)
-        assert invoice.price == 1500000000
+        assert len(invoice.items) == 1
+        assert invoice.items[0].price == 1500000000
         assert invoice.currency == "IDR"
 
     def test_invoice_request_with_string_date(self):
@@ -33,23 +53,42 @@ class TestInvoiceRequest:
             customer_name="Jane Smith",
             guide_name="Tokyo Guide",
             date="2026-05-10",
-            price=200.00,
+            items=[
+                {"description": "City Tour", "quantity": 1, "price": 200.00}
+            ],
             currency="JPY"
         )
 
         assert invoice.date == date(2026, 5, 10)
 
-    def test_invoice_request_with_integer_price(self):
-        """Should accept integer price and convert to float."""
+    def test_invoice_request_subtotal(self):
+        """Should calculate subtotal correctly from items."""
         invoice = InvoiceRequest(
             customer_name="Test User",
             guide_name="Test Guide",
             date="2026-01-01",
-            price=100,
+            items=[
+                {"description": "Tour A", "quantity": 2, "price": 100.00},
+                {"description": "Tour B", "quantity": 1, "price": 50.00}
+            ],
             currency="EUR"
         )
 
-        assert invoice.price == 100.0
+        assert invoice.subtotal == 250.00  # (2*100) + (1*50)
+
+    def test_invoice_request_grand_total_includes_tax(self):
+        """Should calculate grand total with 11% tax."""
+        invoice = InvoiceRequest(
+            customer_name="Test User",
+            guide_name="Test Guide",
+            date="2026-01-01",
+            items=[
+                {"description": "Tour", "quantity": 1, "price": 100.00}
+            ],
+            currency="EUR"
+        )
+
+        assert invoice.grandTotal == pytest.approx(111.00, rel=1e-2)
 
     def test_invoice_request_with_large_price(self):
         """Should handle large price values."""
@@ -57,11 +96,13 @@ class TestInvoiceRequest:
             customer_name="VIP Customer",
             guide_name="Premium Guide",
             date="2026-12-31",
-            price=100000000,
+            items=[
+                {"description": "Premium Service", "quantity": 1, "price": 100000000}
+            ],
             currency="IDR"
         )
 
-        assert invoice.price == 100000000
+        assert invoice.items[0].price == 100000000
 
     def test_invoice_request_missing_customer_name(self):
         """Should raise ValidationError when customer_name is missing."""
@@ -69,7 +110,9 @@ class TestInvoiceRequest:
             InvoiceRequest(
                 guide_name="Bali Explorer",
                 date="2026-04-05",
-                price=1500000000,
+                items=[
+                    {"description": "Tour", "quantity": 1, "price": 1500000000}
+                ],
                 currency="IDR"
             )
 
@@ -79,7 +122,9 @@ class TestInvoiceRequest:
             InvoiceRequest(
                 customer_name="Julius Martin",
                 date="2026-04-05",
-                price=1500000000,
+                items=[
+                    {"description": "Tour", "quantity": 1, "price": 1500000000}
+                ],
                 currency="IDR"
             )
 
@@ -90,18 +135,20 @@ class TestInvoiceRequest:
                 customer_name="Julius Martin",
                 guide_name="Bali Explorer",
                 date="05-04-2026",  # Invalid format
-                price=1500000000,
+                items=[
+                    {"description": "Tour", "quantity": 1, "price": 1500000000}
+                ],
                 currency="IDR"
             )
 
-    def test_invoice_request_invalid_price_type(self):
-        """Should raise ValidationError for non-numeric price."""
+    def test_invoice_request_invalid_items(self):
+        """Should raise ValidationError for invalid items."""
         with pytest.raises(ValidationError):
             InvoiceRequest(
                 customer_name="Julius Martin",
                 guide_name="Bali Explorer",
                 date="2026-04-05",
-                price="expensive",
+                items="not-a-list",
                 currency="IDR"
             )
 
@@ -112,5 +159,7 @@ class TestInvoiceRequest:
                 customer_name="Julius Martin",
                 guide_name="Bali Explorer",
                 date="2026-04-05",
-                price=1500000000
+                items=[
+                    {"description": "Tour", "quantity": 1, "price": 1500000000}
+                ]
             )
